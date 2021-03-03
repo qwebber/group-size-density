@@ -49,8 +49,8 @@ q5 <- glmmTMB(group_size ~ propOpen + season + composition +
               data = fogo)
 
 ## run AIC model selection
-aic <- AIC(q1,q2,q3,q4,q5)
-aic$deltaAIC <- aic$AIC - min(aic$AIC)
+aic <- AIC(q1,q2,q3,q4,q5) 
+aic$deltaAIC <- aic$AIC - min(aic$AIC) ## Table S7
 
 ## top model is q5
 summary(q5) ## Table 4 
