@@ -2,6 +2,7 @@
 ## load libraries
 library(data.table)
 library(glmmTMB)
+library(Rmisc)
 
 ## load data
 fogo <- fread("output/fogo-group-locs.csv")
@@ -17,8 +18,39 @@ fogo$Year <- as.factor(fogo$Year)
 fogo[, uniqueN(JDate), by = c("season", "Year")]
 
 ## run model
-q1 <- glmmTMB(group_size ~ habitat + composition*season +
+## global model
+q1 <- glmmTMB(group_size ~ 
+                propOpen * season 
+                propOpen * composition + 
+                composition * season +
                   (1|Year), family = "nbinom1", 
                  data = fogo)
-summary(q1)
 
+q2 <- glmmTMB(group_size ~ 
+                propOpen * composition + 
+                composition * season +
+                (1|Year), family = "nbinom1", 
+              data = fogo)
+
+q3 <- glmmTMB(group_size ~ 
+                propOpen * season +
+                composition * season +
+                (1|Year), family = "nbinom1", 
+              data = fogo)
+
+q4 <- glmmTMB(group_size ~ 
+                propOpen * season +
+                propOpen * composition +
+                (1|Year), family = "nbinom1", 
+              data = fogo)
+
+q5 <- glmmTMB(group_size ~ propOpen + season + composition +
+                (1|Year), family = "nbinom1", 
+              data = fogo)
+
+## run AIC model selection
+aic <- AIC(q1,q2,q3,q4,q5)
+aic$deltaAIC <- aic$AIC - min(aic$AIC)
+
+## top model is q5
+summary(q5) ## Table 4 
