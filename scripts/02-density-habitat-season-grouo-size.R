@@ -64,9 +64,3 @@ large <- glmmTMB(Total_Caribou ~ log(size) * habitatType  + season * log(size)  
 summary(large)
 
 
-comp <- glmmTMB(Total_Caribou ~ season * comp + (1|HERD) + (1|year), family = "nbinom1", 
-                data = habitat2[season != "Rut"])
-summary(comp)
-
-
-
