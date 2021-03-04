@@ -1,37 +1,51 @@
 
 
-
 ## load libraries
 library(data.table)
 library(ggplot2)
-library(gridExtra)
-
-## load data
-fogo <- fread("output/fogo-group-locs.csv")
+library(sf)
 
 
-png("graphics/FigS4.png",width = 4500, height = 3000, res = 500)
-ggplot(fogo, 
-       aes(composition, group_size, fill = season)) +
-  geom_jitter(aes(color = season), alpha = 0.5, size = 3, 
-              position = position_jitterdodge(jitter.width = 0.2, jitter.height = 0.2)) +
-  geom_boxplot(outlier.color = NA, alpha = 0.4, 
-               position = position_dodge()) +
-  ylim(0,40) +
-  scale_fill_manual(values=c("#e08214", "#b2abd2", "#5aae61")) +
-  scale_color_manual(values=c("#e08214", "#b2abd2", "#5aae61")) +
-  #scale_x_discrete(limits=c("Female groups","Male groups","Mixed groups")) +
-  xlab('') +
-  ylab('Group size') +
-  theme(legend.position = c(0.1,0.9),
-        legend.title = element_blank(),
-        legend.background = element_blank(),
-        legend.key = element_blank(),
-        legend.text = element_text(size = 12),
-        axis.title.y = element_text(size=18),
-        axis.title.x = element_text(size = 9, color = "black"),
-        axis.text = element_text(size = 12, color = "black"),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        panel.border = element_rect(colour = "black", fill=NA, size=1))
+
+df2 <- readRDS("output/group-size-rdm-for-map.RDS")
+
+
+
+## load spatial data
+utm <- '+proj=utm +zone=21 ellps=WGS84'
+nlBounds <- rgdal::readOGR('../maps-in-gg/input/NL/NL-Bounds.shp') %>% 
+  spTransform(CRSobj = utm)
+
+nlBounds2 <- crop(nlBounds, utmBB)
+nlBounds2 <- st_as_sf(nlBounds2)
+
+# Colors
+watercol <- '#c3e2ec'
+islandcol <- '#d0c2a9'
+coastcol <- '#82796a'
+gridcol <- '#323232'
+
+# Themes 
+themeMap <- theme(legend.position = 'none',
+                  plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"), 
+                  legend.key = element_blank(),
+                  panel.border = element_rect(size = 1, fill = NA),
+                  panel.background = element_rect(fill = watercol), 
+                  panel.grid = element_line(color = gridcol, size = 0.2),
+                  axis.text.y = element_text(size = 11, color = 'black'),
+                  axis.text.x = element_text(angle = 45, hjust = 1, 
+                                             size = 11, color = 'black'), 
+                  axis.title = element_blank())
+
+
+
+png("graphics/FigS6.png", width = 4000, height = 4000, res = 600, units = "px")
+ggplot() +
+  geom_sf(data = nlBounds2[1], fill = islandcol) +
+  geom_point(data = df2[group.size > 0], aes(x = EASTING, y = NORTHING, size = group.size), alpha = 0.25) +
+  geom_point(data = df2[group.size == 0], aes(x = EASTING, y = NORTHING), color = "blue", alpha = 0.25) +
+  geom_line(data = df, aes(x = EASTING, y = NORTHING, group = id), color = "black", alpha = 0.5) +
+  lims(y = c(min(df2$NORTHING)-1000, max(df2$NORTHING)+1000),
+       x = c(min(df2$EASTING)-1000, max(df2$EASTING))) +
+  themeMap
 dev.off()
