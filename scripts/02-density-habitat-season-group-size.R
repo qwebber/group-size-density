@@ -55,19 +55,103 @@ habitat2$year <- as.factor(habitat2$year)
 habitat2[season != "Rut"][, unique(season), by = c("season", "HERD", "year")]
 
 ## Small herds:
-small <- glmmTMB(Total_Caribou ~ log(size) * propOpen  + season * log(size)
+s1 <- glmmTMB(Total_Caribou ~ log(size) * propOpen  + 
+                    log(size) * season +
+                    propOpen * season + 
                  + (1|year), family = "nbinom1", 
               data = habitat2[HSize == "Small"])
-summary(small)
+
+s2 <- glmmTMB(Total_Caribou ~ 
+                    log(size) * season +
+                    propOpen * season + 
+                    + (1|year), family = "nbinom1", 
+                  data = habitat2[HSize == "Small"])
+
+s3 <- glmmTMB(Total_Caribou ~ log(size) * propOpen  + 
+                    propOpen * season + 
+                    + (1|year), family = "nbinom1", 
+                  data = habitat2[HSize == "Small"])
+
+s4 <- glmmTMB(Total_Caribou ~ log(size) * propOpen  + 
+                    log(size) * season +
+                    + (1|year), family = "nbinom1", 
+                  data = habitat2[HSize == "Small"])
+
+s5 <- glmmTMB(Total_Caribou ~ log(size) + 
+                    propOpen  + 
+                    season +
+                    + (1|year), family = "nbinom1", 
+                  data = habitat2[HSize == "Small"])
+
+aic <- AIC(s1, s2, s3, s4, s5)
+aic$deltaAIC <- aic$AIC - min(aic$AIC, na.rm = T)
+aic
+summary(s1)
 
 ## Medium herds:
-med <- glmmTMB(Total_Caribou ~ log(size) * propOpen  + season * log(size) + (1|year), family = "nbinom1", 
-                 data = habitat2[HSize == "Med"])
-summary(med)
+m1 <- glmmTMB(Total_Caribou ~ log(size) * propOpen  + 
+                log(size) * season +
+                propOpen * season + 
+                + (1|year), family = "nbinom1", 
+              data = habitat2[HSize == "Med"])
+
+m2 <- glmmTMB(Total_Caribou ~ 
+                log(size) * season +
+                propOpen * season + 
+                + (1|year), family = "nbinom1", 
+              data = habitat2[HSize == "Med"])
+
+m3 <- glmmTMB(Total_Caribou ~ log(size) * propOpen  + 
+                propOpen * season + 
+                + (1|year), family = "nbinom1", 
+              data = habitat2[HSize == "Med"])
+
+m4 <- glmmTMB(Total_Caribou ~ log(size) * propOpen  + 
+                log(size) * season +
+                + (1|year), family = "nbinom1", 
+              data = habitat2[HSize == "Med"])
+
+m5 <- glmmTMB(Total_Caribou ~ log(size) + 
+                propOpen  + 
+                season +
+                + (1|year), family = "nbinom1", 
+              data = habitat2[HSize == "Med"])
+
+aicM <- AIC(m1, m2, m3, m4, m5)
+aicM$deltaAIC <- aicM$AIC - min(aicM$AIC, na.rm = T)
+aicM
+summary(m2)
 
 ## Large herds:
-large <- glmmTMB(Total_Caribou ~ log(size) * propOpen  + season * log(size)  + (1|year), family = "nbinom1", 
-               data = habitat2[HSize == "Large"])
-summary(large)
+l1 <- glmmTMB(Total_Caribou ~ log(size) * propOpen  + 
+                log(size) * season +
+                propOpen * season + 
+                + (1|year), family = "nbinom1", 
+              data = habitat2[HSize == "Large"])
 
+l2 <- glmmTMB(Total_Caribou ~ 
+                log(size) * season +
+                propOpen * season + 
+                + (1|year), family = "nbinom1", 
+              data = habitat2[HSize == "Large"])
 
+l3 <- glmmTMB(Total_Caribou ~ log(size) * propOpen  + 
+                propOpen * season + 
+                + (1|year), family = "nbinom1", 
+              data = habitat2[HSize == "Large"])
+
+l4 <- glmmTMB(Total_Caribou ~ log(size) * propOpen  + 
+                log(size) * season +
+                + (1|year), family = "nbinom1", 
+              data = habitat2[HSize == "Large"])
+
+l5 <- glmmTMB(Total_Caribou ~ log(size) + 
+                propOpen  + 
+                season +
+                + (1|year), family = "nbinom1", 
+              data = habitat2[HSize == "Large"])
+
+aicL <- AIC(l1, l2, l3, l4, l5)
+aicL$deltaAIC <- aicL$AIC - min(aicL$AIC, na.rm = T)
+aicL
+summary(l5)
