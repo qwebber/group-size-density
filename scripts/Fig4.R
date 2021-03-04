@@ -10,16 +10,17 @@ fogo <- fread("output/fogo-group-locs.csv")
 
 
 png("graphics/Fig4.png",width = 3000, height = 3000, res = 500)
-ggplot(fogo, 
-       aes(season, group_size, fill = habitat)) +
-  geom_jitter(aes(color = habitat), alpha = 0.5, size = 3, 
-              position = position_jitterdodge(jitter.width = 0.25, jitter.height = 0.2)) +
-  geom_boxplot(outlier.color = NA, alpha = 0.4, notch = T, 
-               position = position_dodge()) +
+ggplot(fogo, aes(propOpen, group_size, color = season)) +
+  geom_jitter(alpha = 0.5, 
+              size = 3) +
+              #position = position_jitterdodge(jitter.width = 0.25, jitter.height = 0.2)) +
+  #geom_boxplot(outlier.color = NA, alpha = 0.4, notch = T, 
+  #             position = position_dodge()) +
   ylim(0,40) +
-  scale_fill_manual(values=c("#E69F00", "#56B4E9")) +
-  scale_color_manual(values=c("#E69F00", "#56B4E9")) +
-  scale_x_discrete(limits=c("Calving","Summer","Early winter")) +
+  scale_fill_manual(values=c("#e08214", "#b2abd2", "#5aae61")) +
+  scale_color_manual(values=c("#e08214", "#b2abd2", "#5aae61")) +
+  geom_smooth(se = F, color = "black") +
+  #scale_x_discrete(limits=c("Calving","Summer","Early winter")) +
   xlab('') +
   ylab('Group size') +
   theme(legend.position = c(0.1,0.9),
