@@ -13,7 +13,7 @@ allDf$HerdYear <- as.factor(paste(allDf$HERD, allDf$Year, sep = "_"))
 allDf <- allDf[,c("HerdYear", "size")]
 
 ## merge files
-habitat2 <- merge(allDf, habitat, by.EACHI = "HerdYear", allow.cartesian = TRUE)
+habitat2 <- merge(allDf, habitat, by = "HerdYear", allow.cartesian = TRUE)
 
 ## rename herds based on size
 habitat2$HSize[habitat2$HERD == "Avalon"] <- "Small"
