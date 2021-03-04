@@ -14,6 +14,10 @@ allDf <- fread("output/groups-herd-year.csv")
 allDf$HerdYear <- as.factor(paste(allDf$HERD, allDf$Year, sep = "_"))
 allDf <- allDf[,c("HerdYear", "size")]
 
+## only one density value per herd-year
+allDf <- allDf[, mean(size), by = "HerdYear"]
+setnames(allDf, "V1", "size")
+
 ## merge files
 habitat2 <- merge(allDf, habitat, by.EACHI = "HerdYear", allow.cartesian = TRUE)
 
@@ -21,11 +25,21 @@ habitat2 <- merge(allDf, habitat, by.EACHI = "HerdYear", allow.cartesian = TRUE)
 habitat2$habitatType[habitat2$habitatType == "closed"] <- "Closed"
 habitat2$habitatType[habitat2$habitatType == "open"] <- "Open"
 
+## rename herds based on size
+habitat2$HSize[habitat2$HERD == "Avalon"] <- "Small"
+habitat2$HSize[habitat2$HERD == "Cape_Shore"] <- "Small"
+habitat2$HSize[habitat2$HERD == "Mt_Peyton"] <-"Small"
+habitat2$HSize[habitat2$HERD == "Grey_River"] <- "Med"
+habitat2$HSize[habitat2$HERD == "Gaff_Topsails"] <- "Med"
+habitat2$HSize[habitat2$HERD == "Pothill"] <- "Med"
+habitat2$HSize[habitat2$HERD == "St_Anthony"] <- "Med"
+habitat2$HSize[habitat2$HERD == "Lapoile"] <- "Large"
+habitat2$HSize[habitat2$HERD == "Middle_Ridge"] <- "Large"
 
 png("graphics/Fig3.png",width = 6000, height = 4500, res = 600)
-aa = ggplot(habitat2[HSize == "Small" & habitatType != "Rut"], 
+aa = ggplot(habitat2[HSize == "Small" & Total_Caribou < 100], 
             aes(size, Total_Caribou)) +
-  geom_jitter(aes(color = habitatType), alpha = 0.5, width = 0.04, size = 3) +
+  geom_jitter(aes(color = habitat), alpha = 0.5, width = 0.04, size = 3) +
   geom_smooth(method = "lm", se = F, color = "black") +
   scale_fill_manual(values=c("#E69F00", "#56B4E9")) +
   scale_color_manual(values=c("#E69F00", "#56B4E9")) +
@@ -41,9 +55,9 @@ aa = ggplot(habitat2[HSize == "Small" & habitatType != "Rut"],
         panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill=NA, size=1))
 
-bb = ggplot(habitat2[HSize == "Med" & Total_Caribou < 100 & habitatType != "Rut"], 
+bb = ggplot(habitat2[HSize == "Med" & Total_Caribou < 100], 
             aes(size, Total_Caribou)) +
-  geom_jitter(aes(color = habitatType), alpha = 0.5, width = 0.04, size = 3) +
+  geom_jitter(aes(color = habitat), alpha = 0.5, width = 0.04, size = 3) +
   geom_smooth(method = "lm", se = F, color = "black") +
   scale_fill_manual(values=c("#E69F00", "#56B4E9")) +
   scale_color_manual(values=c("#E69F00", "#56B4E9")) +
@@ -58,9 +72,9 @@ bb = ggplot(habitat2[HSize == "Med" & Total_Caribou < 100 & habitatType != "Rut"
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill=NA, size=1))
-cc = ggplot(habitat2[HSize == "Large" & Total_Caribou < 100 & habitatType != "Rut"], 
+cc = ggplot(habitat2[HSize == "Large" & Total_Caribou < 100], 
             aes(size, Total_Caribou)) +
-  geom_jitter(aes(color = habitatType), alpha = 0.5, width = 0.04, size = 3) +
+  geom_jitter(aes(color = habitat), alpha = 0.5, width = 0.04, size = 3) +
   geom_smooth(method = "lm", se = F, color = "black") +
   scale_fill_manual(values=c("#E69F00", "#56B4E9")) +
   scale_color_manual(values=c("#E69F00", "#56B4E9")) +
@@ -80,7 +94,7 @@ cc = ggplot(habitat2[HSize == "Large" & Total_Caribou < 100 & habitatType != "Ru
         panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill=NA, size=1))
 
-dd = ggplot(habitat2[HSize == "Small" & season != "Rut"], 
+dd = ggplot(habitat2[HSize == "Small" & Total_Caribou < 100 & season != "Rut"], 
             aes(size, Total_Caribou)) +
   geom_jitter(aes(color = season), alpha = 0.5, width = 0.04, size = 3) +
   geom_smooth(method = "lm", se = F, color = "black") +
