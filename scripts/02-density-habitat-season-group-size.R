@@ -12,6 +12,10 @@ allDf <- fread("output/groups-herd-year.csv")
 allDf$HerdYear <- as.factor(paste(allDf$HERD, allDf$Year, sep = "_"))
 allDf <- allDf[,c("HerdYear", "size")]
 
+## only one density value per herd-year
+allDf <- allDf[, mean(size), by = "HerdYear"]
+setnames(allDf, "V1", "size")
+
 ## merge files
 habitat2 <- merge(allDf, habitat, by = "HerdYear", allow.cartesian = TRUE)
 
