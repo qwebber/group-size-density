@@ -40,8 +40,12 @@ cbind(d1, d2$V1, d3$V1)
 allDf$Year <- as.factor(allDf$Year)
 
 ### number of surveys per herd
-aa <- allDf[, .N, by = c("HERD", "phase")]
-aa[, sum(N), by = "phase"]
+aa <- allDf[, .N, by = c("HERD", "season", "year")]
+aa[, sum(N), by = "HERD"]
+
+## number of surveys per herd within decline phase
+bb <- allDf[season != "Autumn"][phase == "2001-2013"][, .N, by = c("HERD", "season")]
+bb[, sum(N), by = "season"]
 
 
 ### MEAN GROUP SIZE ###
