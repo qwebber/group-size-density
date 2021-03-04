@@ -38,7 +38,7 @@ habitat2$HSize[habitat2$HERD == "Middle_Ridge"] <- "Large"
 
 png("graphics/Fig3.png",width = 6000, height = 4500, res = 600)
 aa = ggplot(habitat2[HSize == "Small" & Total_Caribou < 100], 
-            aes(size, Total_Caribou)) +
+            aes(habitat, Total_Caribou)) +
   geom_jitter(aes(color = habitat), alpha = 0.5, width = 0.04, size = 3) +
   geom_smooth(method = "lm", se = F, color = "black") +
   scale_fill_manual(values=c("#E69F00", "#56B4E9")) +

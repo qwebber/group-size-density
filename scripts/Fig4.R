@@ -2,28 +2,42 @@
 
 ## load libraries
 library(data.table)
+library(glmmTMB)
 library(ggplot2)
 library(gridExtra)
 
 ## load data
 fogo <- fread("output/fogo-group-locs.csv")
 
+q5 <- glmmTMB(group_size ~ I(propOpen^2) + season + composition +
+                (1|Year), family = "nbinom1", 
+              data = fogo)
+
+summary(q5)
+
+testgTMB<- ggeffect(q5, terms = c("propOpen"))
+setDT(testgTMB)
 
 png("graphics/Fig4.png",width = 3000, height = 3000, res = 500)
-ggplot(fogo, aes(propOpen, group_size, color = season)) +
-  geom_jitter(alpha = 0.5, 
-              size = 3) +
+ggplot() +
+  geom_jitter(data = fogo, aes(propOpen, group_size, color = season), 
+              alpha = 0.5, 
+              size = 3, height = 0.2) +
+  geom_line(data = testgTMB, 
+            aes(x,predicted), size = 1) +
+  geom_ribbon(data = testgTMB, 
+              aes(x = x, y = predicted, 
+                  ymin=conf.low, ymax=conf.high), alpha=0.2) +
               #position = position_jitterdodge(jitter.width = 0.25, jitter.height = 0.2)) +
   #geom_boxplot(outlier.color = NA, alpha = 0.4, notch = T, 
   #             position = position_dodge()) +
   ylim(0,40) +
   scale_fill_manual(values=c("#e08214", "#b2abd2", "#5aae61")) +
   scale_color_manual(values=c("#e08214", "#b2abd2", "#5aae61")) +
-  geom_smooth(se = F, color = "black") +
   #scale_x_discrete(limits=c("Calving","Summer","Early winter")) +
   xlab('') +
   ylab('Group size') +
-  theme(legend.position = c(0.1,0.9),
+  theme(legend.position = c(0.15,0.9),
         legend.title = element_blank(),
         legend.background = element_blank(),
         legend.key = element_blank(),
