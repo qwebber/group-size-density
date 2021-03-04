@@ -2,6 +2,8 @@
 ## load libraries
 library(data.table)
 library(glmmTMB)
+library(Rmisc)
+library(lme4)
 
 #### load data
 allDf <- fread("output/groups-herd-year.csv")
@@ -24,20 +26,23 @@ b3 <- allDf[, CI(size)[1], by = .(HERD,phase)]
 cbind(b1, b2$V1, b3$V1)
 
 ## summary stats on typical group size
-c1 <- allDf[, mean(typicalGS, na.rm = TRUE), by = .(HERD,phase)]
-c2 <- allDf[, CI(typicalGS)[3], by = .(HERD,phase)]
-c3 <- allDf[, CI(typicalGS)[1], by = .(HERD,phase)]
-cbind(c1, c2$V1, c3$V1)
+allDf[, mean(typicalGS, na.rm = TRUE), by = .(HERD,phase)]
+#c2 <- allDf[, CI(typicalGS)[3], by = .(HERD,phase)]
+#c3 <- allDf[, CI(typicalGS)[1], by = .(HERD,phase)]
 
 allDf[, mean(typicalGS, na.rm = TRUE), by = .(phase)]
 
-allDf[, mean(size), by = .(HSize, phase)]
-allDf[, sd(size), by = .(HERD, phase)]
-
+## summary stats on mean group size
+d1 <- allDf[, mean(meanGS), by = .(HERD, phase)]
+d2 <- allDf[, CI(meanGS)[3], by = .(HERD,phase)]
+d3 <- allDf[, CI(meanGS)[1], by = .(HERD,phase)]
+cbind(d1, d2$V1, d3$V1)
 allDf$Year <- as.factor(allDf$Year)
 
 ### number of surveys per herd
-allDf[, .N, by = "HERD"]
+aa <- allDf[, .N, by = c("HERD", "phase")]
+aa[, sum(N), by = "phase"]
+
 
 ### MEAN GROUP SIZE ###
 ## Small herds:
