@@ -36,6 +36,9 @@ habitat2$habitatType[habitat2$habitatType == "closed"] <- "Closed"
 ## remove outliers
 habitat2 <- habitat2[Total_Caribou < 100]
 
+## remove data from the rut
+habitat2 <- habitat2[season != "Rut"]
+
 ## summary stats for season
 habitat2[, mean(Total_Caribou), by = .(season, HSize)]
 habitat2[, CI(Total_Caribou)[3], by = .(season, HSize)]
@@ -52,19 +55,19 @@ habitat2$year <- as.factor(habitat2$year)
 habitat2[season != "Rut"][, unique(season), by = c("season", "HERD", "year")]
 
 ## Small herds:
-small <- glmmTMB(Total_Caribou ~ log(size) * habitatType  + season * log(size)
+small <- glmmTMB(Total_Caribou ~ log(size) * propOpen  + season * log(size)
                  + (1|year), family = "nbinom1", 
-              data = habitat2[HSize == "Small" & season != "Rut"])
+              data = habitat2[HSize == "Small"])
 summary(small)
 
 ## Medium herds:
-med <- glmmTMB(Total_Caribou ~ log(size) * habitatType  + season * log(size) + (1|year), family = "nbinom1", 
-                 data = habitat2[HSize == "Med" & season != "Rut"])
+med <- glmmTMB(Total_Caribou ~ log(size) * propOpen  + season * log(size) + (1|year), family = "nbinom1", 
+                 data = habitat2[HSize == "Med"])
 summary(med)
 
 ## Large herds:
-large <- glmmTMB(Total_Caribou ~ log(size) * habitatType  + season * log(size)  + (1|year), family = "nbinom1", 
-               data = habitat2[HSize == "Large" & season != "Rut"])
+large <- glmmTMB(Total_Caribou ~ log(size) * propOpen  + season * log(size)  + (1|year), family = "nbinom1", 
+               data = habitat2[HSize == "Large"])
 summary(large)
 
 
