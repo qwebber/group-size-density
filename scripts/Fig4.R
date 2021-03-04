@@ -35,7 +35,7 @@ ggplot() +
   scale_fill_manual(values=c("#e08214", "#b2abd2", "#5aae61")) +
   scale_color_manual(values=c("#e08214", "#b2abd2", "#5aae61")) +
   #scale_x_discrete(limits=c("Calving","Summer","Early winter")) +
-  xlab('') +
+  xlab('Habitat openness') +
   ylab('Group size') +
   theme(legend.position = c(0.15,0.9),
         legend.title = element_blank(),
@@ -43,7 +43,7 @@ ggplot() +
         legend.key = element_blank(),
         legend.text = element_text(size = 12),
         axis.title.y = element_text(size=18),
-        axis.title.x = element_text(size = 9, color = "black"),
+        axis.title.x = element_text(size = 18, color = "black"),
         axis.text = element_text(size = 12, color = "black"),
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
