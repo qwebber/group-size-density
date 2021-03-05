@@ -21,6 +21,7 @@ allDf$HERD[allDf$HERD == "Lapoile"] <- "La Poile"
 allDf$HERD[allDf$HERD == "Middle_Ridge"] <- "Middle Ridge"
 
 
+
 png("graphics/FigS2.png", width = 5000, height = 3500, units = "px", res = 600)
 ggplot(allDf) +
   geom_point(aes(year, y = factor(HERD, level = 
@@ -34,7 +35,8 @@ ggplot(allDf) +
                                        "Cape Shore",
                                        "Avalon")),
                  group = season, color = season), 
-             position = position_dodge(width = 0.75)) +
+             position = position_dodge(width = 0.75),
+             alpha = 0.5) +
   scale_color_manual(values=c("#5aae61", "#e08214", "#b2abd2")) +
   geom_vline(xintercept = 2000) +
   geom_hline(yintercept = 1.5, lty = 2) +
@@ -57,4 +59,5 @@ ggplot(allDf) +
     panel.grid.minor = element_blank(),
     panel.background = element_blank(),
     panel.border = element_rect(colour = "black", fill=NA, size=1))
+
 dev.off()
