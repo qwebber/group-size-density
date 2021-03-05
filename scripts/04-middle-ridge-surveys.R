@@ -2,7 +2,7 @@
 
 ### Packages ----
 libs <- c('data.table', 'ggplot2', 'rgdal', 'raster', 'dplyr', 'sf',
-          'adehabitatHR', 'pscl')
+          'adehabitatHR')
 lapply(libs, require, character.only = TRUE)
 
 ## load Fifield et al. data
@@ -59,9 +59,12 @@ df <- data.table(id = c(rep("-37", 1334),rep("-36", 1334),rep("-35", 1334),rep("
                  EASTING   = c(rep(seq(625000, 665000, 30), 37),
                                rep(seq(600000, 665000, 30), 36)))
 
+saveRDS(df, "output/transect-lines.RDS")
+
 ## randomly selected 474*2 points from along transects to assign zeroes
 df2 <- df[sample(nrow(df), length(gs$ID)*100), ]
 df2$group.size <- 0
+
 
 gs2 <- rbind(gs, df2, fill = T)
 
@@ -115,9 +118,6 @@ closedFocal <- focal(closed, weight, na.rm = TRUE, pad = TRUE, padValue = 0)
 gs2[, propOpen := extract(openFocal, matrix(c(EASTING, NORTHING), ncol = 2))]
 gs2[, propClosed := extract(closedFocal, matrix(c(EASTING, NORTHING), ncol = 2))]
 
-saveRDS(gs2, "output/group-size-rdm-for-map.RDS")
-
-
 # Extract point land cover ------------------------------------------------
 gs2[, Value := raster::extract(lc, matrix(c(EASTING, NORTHING), ncol = 2))]
 
@@ -140,68 +140,5 @@ gs2[Value == "Conifer Forest" | Value == "Conifer Scrub" |
 ## remove NAs
 gs2 <- gs2[!is.na(habitat)]
 
-## run single ZIP Model
-## select random points
-df2 <- rbind(gs2[group.size > 0], 
-             gs2[group.size == 0][sample(nrow(gs2[group.size == 0]), length(gs2[group.size > 0]$ID))])
-summary(z1 <- zeroinfl(group.size ~ habitat, data = df2))
-summary(p1 <- glm(group.size ~ habitat, family = poisson, data = df2))
-AIC(z1, p1)
-
-## output datafile of random points
-saveRDS(df2, "output/group-size-rdm-for-map.RDS")
-
-n <- 1000
-out <- c()
-
-for(i in 1:n){ 
-## randomly selected 417 groups to be paired with the observed groups
-df1 <- rbind(gs2[group.size > 0], 
-             gs2[group.size == 0][sample(nrow(gs2[group.size == 0]), length(gs2[group.size > 0]$ID))])
-
-## run ZIP model and compare to GLM
-m1 <- zeroinfl(group.size ~ habitat, data = df1)
-
-out[[i]] <- data.table(coef(m1))
-
-}
-
-out2 <- rbindlist(out)
-out2$coef <- rep(c("count_intercept", 
-                   "count_habitatopen",
-                   "zero_intercept",
-                   "zero_habitatopen"), n)
-
-hist(out2[coef == "count_habitatopen"]$V1)
-
-
-
-## model comparison
-df2 <- rbind(gs2[group.size > 0], 
-             gs2[group.size == 0][sample(nrow(gs2[group.size == 0]), length(gs2[group.size > 0]$ID))])
-summary(z1 <- zeroinfl(group.size ~ habitat, data = df2))
-summary(p1 <- glm(group.size ~ habitat, family = poisson, data = df2))
-AIC(z1, p1)
-
-# Theme
-themeMap <- theme(plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"), 
-                  legend.key = element_blank(),
-                  panel.border = element_rect(size = 1, fill = NA),
-                  panel.background = element_rect(fill = "#d0c2a9"), 
-                  panel.grid = element_line(color = 'black', size = 0.1),
-                  axis.text.y = element_text(size = 11, color = 'black'),
-                  axis.text.x = element_text(angle = 45, hjust = 1, 
-                                             size = 11, color = 'black'), 
-                  axis.title = element_blank())
-
-#png("graphics/FigSX.png")
-ggplot() +
-  geom_point(data = gs3[group.size > 0], aes(x = EASTING, y = NORTHING, size = group.size), alpha = 0.25) +
-  geom_point(data = gs3[group.size == 0], aes(x = EASTING, y = NORTHING), color = "blue", alpha = 0.25) +
-  geom_line(data = df, aes(x = EASTING, y = NORTHING, group = id), color = "black", alpha = 0.5) +
-themeMap
-
-
-fwrite(out2, "output/zip-coefficients.csv")
-
+saveRDS(gs2, "output/group-size-rdm-for-map.RDS")
 
