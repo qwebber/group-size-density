@@ -8,7 +8,7 @@ out2 <- fread("output/zip-coefficients.csv")
 
 out2$V1 <- round(out2$V1, 10)
 
-png("graphics/FigS5.png", )
+png("graphics/FigS7.png", height = 3000, width = 6000, units = "px", res = 600)
 aa <- ggplot(out2[coef == "count_habitatopen"]) +
   geom_histogram(aes(V1), 
                  fill = "darkgrey", 
@@ -17,15 +17,7 @@ aa <- ggplot(out2[coef == "count_habitatopen"]) +
                  bins = 50) +
   ggtitle("A)") +
   ylab("Frequency") +
-  xlab("Coefficient (count data)") +
-  scale_x_continuous(labels=c("0.2460534" = "0.2460534",
-                              "0.24605341" = NULL,
-                              "0.24605355" = "0.24605355",
-                               "0.2460535" = NULL),
-                     breaks = c("0.2460534", 
-                                "0.24605345",
-                                "0.2460535",
-                                "0.24605355"))
+  xlab("Coefficient (Poisson log link model)") +
   theme(legend.position = c(0.7, 0.9),
         legend.title = element_blank(),
         legend.background = element_blank(),
@@ -48,7 +40,7 @@ bb <- ggplot(out2[coef == "zero_habitatopen"]) +
                  bins = 50) +
   ggtitle("B)") +
   ylab("Frequency") +
-  xlab("Coefficient (Zero inflated data)") +
+  xlab("Coefficient (Binomial logit link model)") +
   xlim(-1.3, 0.1) +
   theme(legend.position = c(0.7, 0.9),
         legend.title = element_blank(),
@@ -64,3 +56,4 @@ bb <- ggplot(out2[coef == "zero_habitatopen"]) +
         panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill=NA, size=1))
 grid.arrange(aa,bb,nrow = 1)
+dev.off()
