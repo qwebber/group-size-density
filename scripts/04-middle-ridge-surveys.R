@@ -89,6 +89,35 @@ utmBB <- data.table(dtbb[, project(cbind(x, y), utm$proj4string)])
 # crop raster
 lc <- crop(lc, utmBB)
 
+# Focal rasters -----------------------------------------------------------
+focals <- lapply(legend$Value, function(val) {
+  subs(lc, legend[, .(Value, Value == val)])
+})
+names(focals) <- legend$Value
+
+
+# Combine rasters ---------------------------------------------------------
+# Combine land cover types using the Value numbers from the legend
+open <- Reduce('+', focals[c(1, 6, 7, 8, 9)])
+closed <- Reduce('+', focals[c(2, 3, 4, 5)])
+
+
+# Proportion of habitat in buffer -----------------------------------------
+# Set buffer size
+buff <- 200
+
+weight <- focalWeight(lc, d = buff, type = 'circle')
+
+openFocal <- focal(open, weight, na.rm = TRUE, pad = TRUE, padValue = 0)
+closedFocal <- focal(closed, weight, na.rm = TRUE, pad = TRUE, padValue = 0)
+
+# Proportion of habitat at each relocation
+gs2[, propOpen := extract(openFocal, matrix(c(EASTING, NORTHING), ncol = 2))]
+gs2[, propClosed := extract(closedFocal, matrix(c(EASTING, NORTHING), ncol = 2))]
+
+saveRDS(gs2, "output/group-size-rdm-for-map.RDS")
+
+
 # Extract point land cover ------------------------------------------------
 gs2[, Value := raster::extract(lc, matrix(c(EASTING, NORTHING), ncol = 2))]
 
@@ -111,11 +140,6 @@ gs2[Value == "Conifer Forest" | Value == "Conifer Scrub" |
 ## remove NAs
 gs2 <- gs2[!is.na(habitat)]
 
-<<<<<<< HEAD
-
-
-n <- 100
-=======
 ## run single ZIP Model
 ## select random points
 df2 <- rbind(gs2[group.size > 0], 
@@ -128,7 +152,6 @@ AIC(z1, p1)
 saveRDS(df2, "output/group-size-rdm-for-map.RDS")
 
 n <- 1000
->>>>>>> 5f9c0a04bfaed8c3ab375d15158fe5b09e6ec851
 out <- c()
 
 for(i in 1:n){ 
@@ -149,8 +172,9 @@ out2$coef <- rep(c("count_intercept",
                    "zero_intercept",
                    "zero_habitatopen"), n)
 
-<<<<<<< HEAD
 hist(out2[coef == "count_habitatopen"]$V1)
+
+
 
 ## model comparison
 df2 <- rbind(gs2[group.size > 0], 
@@ -176,8 +200,8 @@ ggplot() +
   geom_point(data = gs3[group.size == 0], aes(x = EASTING, y = NORTHING), color = "blue", alpha = 0.25) +
   geom_line(data = df, aes(x = EASTING, y = NORTHING, group = id), color = "black", alpha = 0.5) +
 themeMap
-=======
+
+
 fwrite(out2, "output/zip-coefficients.csv")
->>>>>>> 5f9c0a04bfaed8c3ab375d15158fe5b09e6ec851
 
 
