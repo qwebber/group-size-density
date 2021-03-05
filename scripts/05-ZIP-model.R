@@ -36,7 +36,7 @@ out2$coef <- rep(c("count_intercept",
                    "zero_intercept",
                    "zero_habitatopen"), n)
 
-hist(out2[coef == "count_habitatopen"]$V1)
+hist(out2[coef == "zero_habitatopen"]$V1)
 
 ## model comparison
 df2 <- rbind(gs2[group.size > 0], 
@@ -44,18 +44,5 @@ df2 <- rbind(gs2[group.size > 0],
 summary(z1 <- zeroinfl(group.size ~ habitat, data = df2))
 summary(p1 <- glm(group.size ~ habitat, family = poisson, data = df2))
 AIC(z1, p1)
-
-# Theme
-themeMap <- theme(plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"), 
-                  legend.key = element_blank(),
-                  panel.border = element_rect(size = 1, fill = NA),
-                  panel.background = element_rect(fill = "#d0c2a9"), 
-                  panel.grid = element_line(color = 'black', size = 0.1),
-                  axis.text.y = element_text(size = 11, color = 'black'),
-                  axis.text.x = element_text(angle = 45, hjust = 1, 
-                                             size = 11, color = 'black'), 
-                  axis.title = element_blank())
-
-
 
 fwrite(out2, "output/zip-coefficients.csv")
