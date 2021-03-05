@@ -7,14 +7,33 @@ library(sf)
 
 
 
-df2 <- readRDS("output/group-size-rdm-for-map.RDS")
+pts <- readRDS("output/group-size-rdm-for-map.RDS")
+
+transect <- readRDS("output/transect-lines.RDS")
 
 
+df2 <- rbind(pts[group.size > 0], 
+             pts[group.size == 0][sample(nrow(pts[group.size == 0]), length(pts[group.size > 0]$ID))])
 
 ## load spatial data
 utm <- '+proj=utm +zone=21 ellps=WGS84'
 nlBounds <- rgdal::readOGR('../maps-in-gg/input/NL/NL-Bounds.shp') %>% 
   spTransform(CRSobj = utm)
+
+bb <- c(
+  xmin = -55.75,
+  ymin = 48.75,
+  xmax = -54.75,
+  ymax = 47.5
+)
+
+dtbb <- data.table(x = c(bb[['xmin']], bb[['xmax']]),
+                   y = c(bb[['ymin']], bb[['ymax']]))
+
+# Project and buffer out for clarity
+buf <- 3e4
+utmBB <- data.table(dtbb[, project(cbind(x, y), utm)])
+
 
 nlBounds2 <- crop(nlBounds, utmBB)
 nlBounds2 <- st_as_sf(nlBounds2)
@@ -44,7 +63,7 @@ ggplot() +
   geom_sf(data = nlBounds2[1], fill = islandcol) +
   geom_point(data = df2[group.size > 0], aes(x = EASTING, y = NORTHING, size = group.size), alpha = 0.25) +
   geom_point(data = df2[group.size == 0], aes(x = EASTING, y = NORTHING), color = "blue", alpha = 0.25) +
-  geom_line(data = df, aes(x = EASTING, y = NORTHING, group = id), color = "black", alpha = 0.5) +
+  geom_line(data = transect, aes(x = EASTING, y = NORTHING, group = id), color = "black", alpha = 0.5) +
   lims(y = c(min(df2$NORTHING)-1000, max(df2$NORTHING)+1000),
        x = c(min(df2$EASTING)-1000, max(df2$EASTING))) +
   themeMap
