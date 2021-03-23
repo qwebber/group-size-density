@@ -15,6 +15,8 @@ transect <- readRDS("output/transect-lines.RDS")
 df2 <- rbind(pts[group.size > 0], 
              pts[group.size == 0][sample(nrow(pts[group.size == 0]), length(pts[group.size > 0]$ID))])
 
+df2
+
 ## load spatial data
 utm <- '+proj=utm +zone=21 ellps=WGS84'
 nlBounds <- rgdal::readOGR('../maps-in-gg/input/NL/NL-Bounds.shp') %>% 
