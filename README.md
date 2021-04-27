@@ -4,9 +4,7 @@
 
 
 
-[![DOI](https://zenodo.org/badge/340174571.svg)](https://zenodo.org/badge/latestdoi/340174571)
-
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4723310.svg)](https://doi.org/10.5281/zenodo.4723310)
 
 
   - Authors:
