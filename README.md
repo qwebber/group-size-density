@@ -12,7 +12,7 @@
       - [Eric Vander Wal](https://weel.gitlab.io/)
 
 This repository contains the code accompanying the paper “Context-dependent group size: effects of population density, habitat, and season”. 
-Scripts are under `scripts/`.  Raw input data are that include the coordinates of caribou groups are private as they contain sensitive spatial locaitons of caribou, but derived data indicating habitat type (open/closed) and habitat openness as well as all data generated for subsequent analyses and used for figures are available under `output/`.
+Scripts are under `scripts/`.  Raw input data do not include the coordinates of caribou groups because the spatial locaitons of caribou are sensitive. Derived data indicating habitat type (open/closed) and habitat openness as well as all data generated for subsequent analyses and used for figures are available under `output/`.
 
 ## Abstract
 
